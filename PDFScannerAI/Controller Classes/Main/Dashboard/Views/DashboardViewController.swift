@@ -11,6 +11,7 @@ class DashboardViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var newScanButton: UIButton!
     @IBOutlet weak var aiButton: UIButton!
+    @IBOutlet weak var carScanButton: UIButton!
     
     private var interactionHelper: DashboardInteractionHelper!
     private var tableViewHelper: DashboardTableViewHelper!
@@ -27,6 +28,7 @@ class DashboardViewController: UIViewController {
         }
         aiButton.addTarget(interactionHelper, action: #selector(DashboardInteractionHelper.handleAIButton(_:)), for: .touchUpInside)
         newScanButton.addTarget(interactionHelper, action: #selector(DashboardInteractionHelper.handleNewScanButton(_:)), for: .touchUpInside)
+        carScanButton.addTarget(interactionHelper, action: #selector(DashboardInteractionHelper.handleCarScanButton(_:)), for: .touchUpInside)
         setupUI()
     }
     

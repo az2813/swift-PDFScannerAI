@@ -24,6 +24,17 @@ final class PreviewViewModel {
         pdfURL = url
         document = Document(fileURL: url)
     }
+    
+    func loadPDF(at url: URL, start: Int, count: Int) {
+        pdfDocument = PDFDocument()
+        if let pdf = PDFDocument(url: url) {
+            for i in 0 ..< count {
+                pdfDocument?.insert(pdf.page(at: i + start)!, at: i)
+            }
+        }
+        pdfURL = url
+        document = Document(fileURL: url)
+    }
 
     func updateFileName(_ name: String) {
         fileName = name

@@ -91,7 +91,7 @@ class GenericPaywallTableFooterView: UIView {
         let button = UIButton(type: .system)
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = FontHelper.font(.regular, size: 14)
-        button.setTitleColor(Colors.secondaryTextColor, for: .normal)
+        button.setTitleColor(UIColor.black, for: .normal)
         button.addTarget(self, action: action, for: .touchUpInside)
         return button
     }
@@ -100,7 +100,7 @@ class GenericPaywallTableFooterView: UIView {
         let dot = UILabel()
         dot.text = "•"
         dot.font = FontHelper.font(.black, size: 16)
-        dot.textColor = Colors.secondaryTextColor
+        dot.textColor = UIColor.black
         return dot
     }
 

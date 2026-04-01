@@ -12,10 +12,20 @@ class DateHelper {
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         return formatter.string(from: Date())
     }
+    
+    static func timestampString() -> String {
+        return "\(Date().timeIntervalSince1970)"
+    }
 
     static func currentDateKey() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: Date())
+    }
+    
+    static func currentDateTimeKey() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
         return formatter.string(from: Date())
     }
 
@@ -41,5 +51,11 @@ class DateHelper {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM-dd HH:mm"
         return formatter.string(from: date)
+    }
+    
+    static func currentDateString() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd/yyyy"
+        return formatter.string(from: Date())
     }
 }

@@ -14,6 +14,11 @@ final class SettingsInteractionHelper {
         self.viewController = viewController
     }
 
+    func presentPremium() {
+        guard let vc = viewController else { return }
+        PaywallManager.shared.presentPaywall(paywallType: "paywall_6", from: vc, isDismiss: true)
+    }
+    
     func presentPaywall() {
         guard let vc = viewController else { return }
         PaywallManager.shared.showPaywall(from: vc, configKey: "paywall_settings", isDismiss: true)

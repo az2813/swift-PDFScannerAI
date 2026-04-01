@@ -26,8 +26,7 @@ final class PaywallThreeUIConfigurator {
     private func setupCustomButton(imageName: String? = nil, title: String? = nil, action: Selector, isRight: Bool, in vc: PaywallThreeViewController) {
         let button = UIButton(type: .system)
         if let imageName = imageName {
-            button.setImage(UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate), for: .normal)
-            button.imageEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+            button.setImage(UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate).resized(to: CGSize(width: 18, height: 18)), for: .normal)
             button.tintColor = Colors.navigationItemsTintColor
         } else if let title = title {
             button.setTitle(title, for: .normal)
@@ -44,6 +43,15 @@ final class PaywallThreeUIConfigurator {
         }
         UIView.animate(withDuration: 0.5, delay: 4.0) {
             button.alpha = 0.6
+        }
+    }
+}
+
+extension UIImage {
+    func resized(to size: CGSize) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { _ in
+            self.draw(in: CGRect(origin: .zero, size: size))
         }
     }
 }

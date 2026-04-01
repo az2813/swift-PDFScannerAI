@@ -20,10 +20,10 @@ class SubscriptionManager {
                 } else {
                     Adapty.getProfile { result in
                         if let profile = try? result.get(),
-                           profile.accessLevels["premium"]?.isActive != true {
+                           profile.accessLevels["premium"]?.isActive == true {
                             completion(true)
                         } else {
-                            completion(false)
+                            completion(PurchaseManager.shared.isPurchased())
                         }
                     }
                 }

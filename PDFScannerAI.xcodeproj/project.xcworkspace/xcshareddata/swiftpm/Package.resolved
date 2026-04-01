@@ -1,5 +1,5 @@
 {
-  "originHash" : "e194b0fdf28e88b24de23ee33803def2e49ad013e85cfe415aef1100ef4bf36e",
+  "originHash" : "43472248c0176cc5715d8d88a2fc0c8b16c277412ae3670fcf189eb951e6e64e",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -137,6 +137,15 @@
       }
     },
     {
+      "identity" : "progresshud",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/relatedcode/ProgressHUD",
+      "state" : {
+        "revision" : "4aa638a88450d6d48a6620070722e875e7a179ef",
+        "version" : "14.1.4"
+      }
+    },
+    {
       "identity" : "promises",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/promises.git",
@@ -152,6 +161,15 @@
       "state" : {
         "revision" : "102a647b573f60f73afdce5613a51d71349fe507",
         "version" : "1.30.0"
+      }
+    },
+    {
+      "identity" : "swiftystorekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/bizz84/SwiftyStoreKit",
+      "state" : {
+        "revision" : "9ce911639680113dac9b554d6243e406a9758ebe",
+        "version" : "0.16.4"
       }
     }
   ],

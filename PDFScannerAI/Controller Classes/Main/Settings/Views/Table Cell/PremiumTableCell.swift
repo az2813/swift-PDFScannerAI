@@ -34,7 +34,7 @@ class PremiumTableCell: UITableViewCell {
         premiumSubtitleLabel.font = FontHelper.font(.semiBold, size: 14)
         
         premiumTitleLabel.text = "Premium for free"
-        premiumSubtitleLabel.text = "Create stunning AI tattoos with no limits"
+        premiumSubtitleLabel.text = "Including auto maintenance.\nLog with no limits!"
     }
     
     private func setupBackgroundImageView() {

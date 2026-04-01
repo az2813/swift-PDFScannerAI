@@ -15,9 +15,14 @@ final class EditorBusinessLogic {
     
     var pageCount: Int { viewModel.pageCount }
     var fileName: String { viewModel.fileName }
+    var isUpdate: Bool { viewModel.document != nil }
     
     func loadImages(_ images: [UIImage]) {
         viewModel.loadImages(images)
+    }
+    
+    func getImages() -> [UIImage] {
+        viewModel.getImages()
     }
     
     func updateFileName(_ newName: String) {

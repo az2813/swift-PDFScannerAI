@@ -27,8 +27,8 @@ final class PaywallFourUIConfigurator {
     private func setupCustomButton(imageName: String? = nil, title: String? = nil, action: Selector, isRight: Bool, in vc: PaywallFourViewController) {
         let button = UIButton(type: .system)
         if let imageName = imageName {
-            button.setImage(UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate), for: .normal)
-            button.imageEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+            button.setImage(UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate).resized(to: CGSize(width: 18, height: 18)), for: .normal)
+            //button.imageEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
             button.tintColor = Colors.navigationItemsTintColor
         } else if let title = title {
             button.setTitle(title, for: .normal)

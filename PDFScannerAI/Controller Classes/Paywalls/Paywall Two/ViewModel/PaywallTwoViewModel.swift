@@ -49,6 +49,7 @@ class PaywallTwoViewModel {
             let durationTitle = SubscriptionTitleHelper.proTitle(for: product)
             let priceTrialLabel = hasTrial ? "\(trial), then \(price)" : price
             let weeklyPrice = SubscriptionPriceHelper.weeklyPriceString(for: product)
+            print(product.vendorProductId)
             return ProductInfo(product: product, durationTitle: durationTitle, priceTrialLabel: priceTrialLabel, weeklyPriceLabel: weeklyPrice)
         }
         self.products = mapped

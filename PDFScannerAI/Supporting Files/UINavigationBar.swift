@@ -17,13 +17,22 @@ extension UINavigationBar {
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
 
         if let backImage = UIImage(named: "back_icon") {
-            let insetImage = backImage.withAlignmentRectInsets(UIEdgeInsets(top: -2, left: -8, bottom: 2, right: 0))
+            let insetImage = backImage.withAlignmentRectInsets(UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
             appearance.setBackIndicatorImage(insetImage, transitionMaskImage: insetImage)
         }
 
         let backButtonAppearance = UIBarButtonItemAppearance(style: .plain)
         backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.clear]
         appearance.backButtonAppearance = backButtonAppearance
+        
+        let buttonAppearance = UIBarButtonItemAppearance()
+        buttonAppearance.normal.backgroundImage = UIImage()
+        buttonAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.label
+        ]
+
+        appearance.buttonAppearance = buttonAppearance
+        appearance.doneButtonAppearance = buttonAppearance
 
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
