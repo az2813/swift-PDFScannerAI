@@ -16,7 +16,7 @@ final class PDFCreator {
     ///   - fileName: Optional name for the resulting PDF file. If not provided the
     ///     name will default to "Scan_`date`.pdf".
     /// - Returns: URL to the generated PDF file or `nil` on failure.
-    static func createPDF(from images: [UIImage], fileName: String? = nil) -> URL? {
+    static func createPDF(from images: [UIImage], fileName: String? = nil, isFromAddCar: Bool = false) -> URL? {
         guard !images.isEmpty else { return nil }
 
         let pdfDocument = PDFDocument()
@@ -29,6 +29,8 @@ final class PDFCreator {
         let baseName: String
         if let name = fileName, !name.trimmingCharacters(in: .whitespaces).isEmpty {
             baseName = name
+        } else if isFromAddCar {
+            baseName = "MyCar_\(DateHelper.fileNameDateString())"
         } else {
             baseName = "Scan_\(DateHelper.fileNameDateString())"
         }
@@ -37,5 +39,23 @@ final class PDFCreator {
         let url = documentsDir.appendingPathComponent(finalName)
 
         return pdfDocument.write(to: url) ? url : nil
+    }
+    
+    static func updatePDF(from document: Document, images: [UIImage]) -> URL? {
+        guard !images.isEmpty else { return document.fileURL }
+
+        var pdfDocument = PDFDocument(url: document.fileURL)
+        if document.services.count == 0 {
+            pdfDocument = PDFDocument()
+        }
+        for (index, image) in images.enumerated() {
+            if let page = PDFPage(image: image) {
+                pdfDocument?.insert(page, at: index)
+            }
+        }
+
+        try? FileManager.default.removeItem(at: document.fileURL)
+
+        return pdfDocument?.write(to: document.fileURL) == true ? document.fileURL : nil
     }
 }

@@ -47,6 +47,9 @@ final class EditorViewModel {
     var adjustmentMode: AdjustmentMode = .none
     var contrastValues: [CGFloat] = []
     var brightnessValues: [CGFloat] = []
+    var isFromAddCar: Bool = false
+    var isCarImage: Bool = false
+    var document: Document? = nil
 
     func setupAdjustments(for count: Int) {
         contrastValues = Array(repeating: 1.0, count: count)
@@ -56,9 +59,20 @@ final class EditorViewModel {
     func loadImages(_ images: [UIImage]) {
         pages = images.map { PageImage(image: $0, rotation: 0, filter: .original) }
         setupAdjustments(for: pages.count)
-        if fileName.isEmpty {
-            fileName = "Scan_\(DateHelper.fileNameDateString())"
+        if let document = document {
+            fileName = document.fileName
         }
+        if fileName.isEmpty {
+            if isFromAddCar {
+                fileName = "Car_\(DateHelper.fileNameDateString())"
+            } else {
+                fileName = "Scan_\(DateHelper.fileNameDateString())"
+            }
+        }
+    }
+    
+    func getImages() -> [UIImage] {
+        return pages.map { $0.image }
     }
 
     private func updateFilteredImage(at index: Int) {
@@ -134,7 +148,11 @@ final class EditorViewModel {
                 images.append(img)
             }
         }
-        return PDFCreator.createPDF(from: images, fileName: fileName)
+        if let document = document {
+            return PDFCreator.updatePDF(from: document, images: images)
+        } else {
+            return PDFCreator.createPDF(from: images, fileName: fileName, isFromAddCar: isFromAddCar)
+        }
     }
 
     func setContrast(_ value: CGFloat, for index: Int) {

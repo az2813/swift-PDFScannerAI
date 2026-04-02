@@ -27,7 +27,16 @@ final class PaywallOneInteractionHelper {
         AnimationUtility.animateButtonPress(vc.subscribeButton) { [weak self] in
             self?.viewController?.hapticFeedback()
             LoadingIndicatorManager.shared.show()
-            self?.viewModel.purchaseSelectedProduct { [weak self] result in
+            PurchaseManager.shared.didPurchase = { success in
+                if success {
+                    DispatchQueue.main.async {
+                        self?.openApp()
+                    }
+                }
+            }
+            guard let productId = self?.viewModel.selectedProduct?.product.vendorProductId else { return }
+            PurchaseManager.shared.purchase(productId: productId)
+            /*self?.viewModel.purchaseSelectedProduct { [weak self] result in
                 DispatchQueue.main.async {
                     LoadingIndicatorManager.shared.hide()
                     switch result {
@@ -42,7 +51,7 @@ final class PaywallOneInteractionHelper {
                         }
                     }
                 }
-            }
+            }*/
         }
     }
     
@@ -50,7 +59,15 @@ final class PaywallOneInteractionHelper {
         guard let vc = viewController else { return }
         vc.hapticFeedback()
         LoadingIndicatorManager.shared.show()
-        viewModel.restorePurchases { [weak self] result in
+        PurchaseManager.shared.didRestore = { success in
+            if success {
+                DispatchQueue.main.async {
+                    self.openApp()
+                }
+            }
+        }
+        PurchaseManager.shared.restore()
+        /*viewModel.restorePurchases { [weak self] result in
             DispatchQueue.main.async {
                 LoadingIndicatorManager.shared.hide()
                 switch result {
@@ -65,7 +82,7 @@ final class PaywallOneInteractionHelper {
                     }
                 }
             }
-        }
+        }*/
     }
     
     @objc func customBackButtonTapped() {

@@ -10,7 +10,7 @@ extension PDFPage {
         let format = UIGraphicsImageRendererFormat.default()
         format.scale = scale
         let renderer = UIGraphicsImageRenderer(size: pageRect.size, format: format)
-        let img = renderer.image { ctx in
+        let image = renderer.image { ctx in
             UIColor.white.set()
             ctx.fill(pageRect)
             ctx.cgContext.saveGState()
@@ -20,6 +20,6 @@ extension PDFPage {
             draw(with: .mediaBox, to: ctx.cgContext)
             ctx.cgContext.restoreGState()
         }
-        return img
+        return image
     }
 }

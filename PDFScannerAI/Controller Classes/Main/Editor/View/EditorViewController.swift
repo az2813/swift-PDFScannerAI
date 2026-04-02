@@ -49,10 +49,29 @@ class EditorViewController: UIViewController {
     var backgroundImageView: UIImageView!
     var blurView: UIVisualEffectView!
     private var filterWorkItem: DispatchWorkItem?
+    var isFromAddCar: Bool = false {
+        didSet {
+            viewModel.isFromAddCar = isFromAddCar
+        }
+    }
+    var isCarImage: Bool = false {
+        didSet {
+            viewModel.isFromAddCar = isFromAddCar
+        }
+    }
+    var didSavePDF: ((URL, [UIImage]) -> Void)? = nil
+    var document: Document? = nil {
+        didSet {
+            viewModel.document = document
+        }
+    }
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.isFromAddCar = isFromAddCar
+        viewModel.isCarImage = isCarImage
+        viewModel.document = document
         uiConfigurator.configureUI(for: self)
         uiConfigurator.setupBackground(for: self)
         interactionHelper = EditorInteractionHelper(viewController: self, businessLogic: businessLogic)
@@ -197,7 +216,7 @@ extension EditorViewController {
             tapTarget: self,
             tapAction: #selector(handleTitleTap),
             pagesTarget: self,
-            pagesAction: #selector(handlePagesButton)
+            pagesAction: nil//#selector(handlePagesButton)
         )
     }
 

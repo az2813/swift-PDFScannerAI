@@ -34,7 +34,7 @@ class PaywallManager {
     // MARK: - Private Methods
 
     /// Determines which paywall to present based on the paywall type.
-    private func presentPaywall(paywallType: String, from viewController: UIViewController, isDismiss: Bool) {
+    func presentPaywall(paywallType: String, from viewController: UIViewController, isDismiss: Bool) {
         let viewControllerIdentifier: String
         switch paywallType {
         case "paywall_1":
@@ -42,9 +42,15 @@ class PaywallManager {
         case "paywall_2":
             viewControllerIdentifier = "PaywallTwoViewController"
         case "paywall_3":
-            viewControllerIdentifier = "PaywallThreeViewController"
+            //viewControllerIdentifier = "PaywallThreeViewController"
+            viewControllerIdentifier = "PaywallFiveViewController"
         case "paywall_4":
-            viewControllerIdentifier = "PaywallFourViewController"
+            //viewControllerIdentifier = "PaywallFourViewController"
+            viewControllerIdentifier = "PaywallSixViewController"
+        case "paywall_5":
+            viewControllerIdentifier = "PaywallFiveViewController"
+        case "paywall_6":
+            viewControllerIdentifier = "PaywallSixViewController"
         default:
             viewControllerIdentifier = "PaywallOneViewController"
         }

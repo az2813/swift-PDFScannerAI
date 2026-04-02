@@ -43,6 +43,7 @@ final class FileChatManager {
     func saveDocument(at url: URL,
                       fileName: String,
                       metadata: [String: Any] = [:],
+                      carData: [String: Any] = [:],
                       chats: [[String]] = [],
                       completion: ((Result<Void, Error>) -> Void)? = nil) {
         getUserFilesRef { filesRef in
@@ -59,7 +60,36 @@ final class FileChatManager {
                 "chats": chats
             ]
             if !metadata.isEmpty { values["metadata"] = metadata }
+            if !carData.isEmpty { values["carData"] = carData }
             fileRef.setValue(values) { error, _ in
+                if let error = error {
+                    completion?(.failure(error))
+                } else {
+                    completion?(.success(()))
+                }
+            }
+        }
+    }
+    
+    func updateDocument(at url: URL,
+                        fileName: String,
+                        metadata: [String: Any] = [:],
+                        chats: [[String]] = [],
+                        carData: [String: Any] = [:],
+                        completion: ((Result<Void, Error>) -> Void)? = nil) {
+        getUserFilesRef { filesRef in
+            guard let filesRef = filesRef else {
+                completion?(.failure(NSError(domain: "DatabaseError", code: 0,
+                                           userInfo: [NSLocalizedDescriptionKey: "Failed to get user files reference."])))
+                return
+            }
+
+            let fileRef = filesRef.child(fileName)
+            var values: [String: Any] = [:]
+            if !chats.isEmpty { values["chats"] = chats }
+            if !metadata.isEmpty { values["metadata"] = metadata }
+            if !carData.isEmpty { values["carData"] = carData }
+            fileRef.updateChildValues(values) { error, _ in
                 if let error = error {
                     completion?(.failure(error))
                 } else {
@@ -151,6 +181,7 @@ final class FileChatManager {
             var document: Document?
             if let localDoc = Document(fileURL: url) {
                 document = localDoc
+                document?.carData = dict["carData"] as? [String: Any]
             } else {
                 let metadata = dict["metadata"] as? [String: Any]
                 let pages = metadata?["pages"] as? Int ?? 0
@@ -160,7 +191,7 @@ final class FileChatManager {
                 } else {
                     date = Date()
                 }
-                document = Document(fileURL: url, pagesCount: pages, modificationDate: date)
+                document = Document(fileURL: url, pagesCount: pages, modificationDate: date, carData: dict["carData"] as? [String: Any])
             }
             if let document = document {
                 if let rawChats = dict["chats"] as? [[String]] {

@@ -35,6 +35,8 @@
 		4961834F2E377DD400405963 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 4961834E2E377DD400405963 /* FirebaseRemoteConfig */; };
 		496183512E377DD400405963 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 496183502E377DD400405963 /* FirebaseStorage */; };
 		496183532E377DD400405963 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 496183522E377DD400405963 /* FirebaseStorageCombine-Community */; };
+		D76FE3FC2F4FC96C006066C5 /* SwiftyStoreKit in Frameworks */ = {isa = PBXBuildFile; productRef = D76FE3FB2F4FC96C006066C5 /* SwiftyStoreKit */; };
+		D76FE4022F4FCB2A006066C5 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = D76FE4012F4FCB2A006066C5 /* ProgressHUD */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -69,6 +71,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4961834B2E377DD400405963 /* FirebaseMessaging in Frameworks */,
+				D76FE3FC2F4FC96C006066C5 /* SwiftyStoreKit in Frameworks */,
 				496183292E377DD400405963 /* FirebaseAnalytics in Frameworks */,
 				496183242E377D9900405963 /* Alamofire in Frameworks */,
 				4961832D2E377DD400405963 /* FirebaseAnalyticsIdentitySupport in Frameworks */,
@@ -82,6 +85,7 @@
 				496183352E377DD400405963 /* FirebaseAuthCombine-Community in Frameworks */,
 				4961833B2E377DD400405963 /* FirebaseDatabase in Frameworks */,
 				496183472E377DD400405963 /* FirebaseInstallations in Frameworks */,
+				D76FE4022F4FCB2A006066C5 /* ProgressHUD in Frameworks */,
 				4961831C2E377D8300405963 /* Adapty in Frameworks */,
 				496183412E377DD400405963 /* FirebaseFunctions in Frameworks */,
 				4961831E2E377D8300405963 /* AdaptyPlugin in Frameworks */,
@@ -174,6 +178,8 @@
 				4961834E2E377DD400405963 /* FirebaseRemoteConfig */,
 				496183502E377DD400405963 /* FirebaseStorage */,
 				496183522E377DD400405963 /* FirebaseStorageCombine-Community */,
+				D76FE3FB2F4FC96C006066C5 /* SwiftyStoreKit */,
+				D76FE4012F4FCB2A006066C5 /* ProgressHUD */,
 			);
 			productName = PDFScannerAI;
 			productReference = 49617FAC2E377A5100405963 /* PDFScannerAI.app */;
@@ -208,6 +214,8 @@
 				4961831F2E377D8C00405963 /* XCRemoteSwiftPackageReference "CDMarkdownKit" */,
 				496183222E377D9900405963 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				496183252E377DD400405963 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				D76FE3FA2F4FC96C006066C5 /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */,
+				D76FE4002F4FCB2A006066C5 /* XCRemoteSwiftPackageReference "ProgressHUD" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 49617FAD2E377A5100405963 /* Products */;
@@ -247,11 +255,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = PDFScannerAI/PDFScannerAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = PW6QWR3G58;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H3VN4WRC2W;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PDFScannerAI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "PDF Scanner";
+				INFOPLIST_KEY_CFBundleDisplayName = LogitHub;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We use your camera so you can snap photos of your plants for instant identification and health analysis. Your images remain private and secure.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to your photo library to save generated images.";
@@ -266,7 +274,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dorthe.aipdfscanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -284,11 +292,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = PDFScannerAI/PDFScannerAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = PW6QWR3G58;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H3VN4WRC2W;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PDFScannerAI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "PDF Scanner";
+				INFOPLIST_KEY_CFBundleDisplayName = LogitHub;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We use your camera so you can snap photos of your plants for instant identification and health analysis. Your images remain private and secure.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to your photo library to save generated images.";
@@ -303,7 +311,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dorthe.aipdfscanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -491,6 +499,22 @@
 				minimumVersion = 12.0.0;
 			};
 		};
+		D76FE3FA2F4FC96C006066C5 /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/bizz84/SwiftyStoreKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.16.4;
+			};
+		};
+		D76FE4002F4FCB2A006066C5 /* XCRemoteSwiftPackageReference "ProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/relatedcode/ProgressHUD";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 14.1.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -628,6 +652,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 496183252E377DD400405963 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
+		};
+		D76FE3FB2F4FC96C006066C5 /* SwiftyStoreKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D76FE3FA2F4FC96C006066C5 /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */;
+			productName = SwiftyStoreKit;
+		};
+		D76FE4012F4FCB2A006066C5 /* ProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D76FE4002F4FCB2A006066C5 /* XCRemoteSwiftPackageReference "ProgressHUD" */;
+			productName = ProgressHUD;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

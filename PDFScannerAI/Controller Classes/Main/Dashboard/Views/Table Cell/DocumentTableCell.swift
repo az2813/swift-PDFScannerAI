@@ -19,6 +19,8 @@ class DocumentTableCell: UITableViewCell {
     @IBOutlet weak var fileNameLabel: UILabel!
     @IBOutlet weak var fileMetaLabel: UILabel!
     @IBOutlet weak var moreButton: UIButton!
+    
+    @IBOutlet weak var topPDFImageConstraint: NSLayoutConstraint!
 
     weak var delegate: DocumentTableCellDelegate?
     private var document: Document?
@@ -55,6 +57,20 @@ class DocumentTableCell: UITableViewCell {
         pagesCountLabel.text = "Pages: \(document.pagesCount)"
         fileMetaLabel.text = metaInfo
         pdfImageView.image = UIImage(named: "pdf_image")
+        pdfImageView.contentMode = .scaleAspectFit
+        pdfImageView.layer.cornerRadius = 0
+        pdfImageView.layer.masksToBounds = true
+        topPDFImageConstraint.constant = 20
+        if let imageName = document.carData?["image"] as? String {
+            let documentURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let imageURL = documentURL.appendingPathComponent(imageName)
+            if let data = try? Data(contentsOf: imageURL) {
+                pdfImageView.image = UIImage(data: data)
+                pdfImageView.contentMode = .scaleAspectFill
+                pdfImageView.layer.cornerRadius = 10
+                topPDFImageConstraint.constant = 8
+            }
+        }
         setNeedsLayout()
     }
 

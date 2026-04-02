@@ -8,31 +8,33 @@ import Foundation
 import UIKit
 
 class PreviewNavigationBarHelper {
-    static func configureNavigationBar(for viewController: UIViewController, fileName: String, tapTarget: Any?, tapAction: Selector?, doneTarget: Any?, doneAction: Selector?) {
-        let titleLabel = UILabel()
-        titleLabel.text = fileName
-        titleLabel.font = FontHelper.font(.semiBold, size: 16)
-        titleLabel.textColor = Colors.mainTextColor
-
-        let descriptionLabel = UILabel()
-        descriptionLabel.text = "Tap to edit"
-        descriptionLabel.font = FontHelper.font(.medium, size: 12)
-        descriptionLabel.textColor = Colors.grayColor
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.textAlignment = .center
-
-        let mainStack = UIStackView(arrangedSubviews: [titleLabel, descriptionLabel])
-        mainStack.axis = .vertical
-        mainStack.alignment = .center
-        mainStack.spacing = 2
-
-        if let action = tapAction {
-            let tap = UITapGestureRecognizer(target: tapTarget, action: action)
-            mainStack.isUserInteractionEnabled = true
-            mainStack.addGestureRecognizer(tap)
+    static func configureNavigationBar(for viewController: UIViewController, fileName: String, tapTarget: Any?, tapAction: Selector?, doneTarget: Any?, doneAction: Selector?, isTitleEditable: Bool = true) {
+        if isTitleEditable {
+            let titleLabel = UILabel()
+            titleLabel.text = fileName
+            titleLabel.font = FontHelper.font(.semiBold, size: 16)
+            titleLabel.textColor = Colors.mainTextColor
+            
+            let descriptionLabel = UILabel()
+            descriptionLabel.text = "Tap to edit"
+            descriptionLabel.font = FontHelper.font(.medium, size: 12)
+            descriptionLabel.textColor = Colors.grayColor
+            descriptionLabel.numberOfLines = 0
+            descriptionLabel.textAlignment = .center
+            
+            let mainStack = UIStackView(arrangedSubviews: [titleLabel, descriptionLabel])
+            mainStack.axis = .vertical
+            mainStack.alignment = .center
+            mainStack.spacing = 2
+            
+            if let action = tapAction, isTitleEditable {
+                let tap = UITapGestureRecognizer(target: tapTarget, action: action)
+                mainStack.isUserInteractionEnabled = true
+                mainStack.addGestureRecognizer(tap)
+            }
+            
+            viewController.navigationItem.titleView = mainStack
         }
-
-        viewController.navigationItem.titleView = mainStack
 
         if let action = doneAction {
             viewController.navigationItem.rightBarButtonItem =
@@ -50,16 +52,34 @@ class PreviewNavigationBarHelper {
         label.clipsToBounds = true
         label.setHorizontalPadding(8)
         label.setVerticalPadding(6)
-        label.sizeToFit()
+        label.translatesAutoresizingMaskIntoConstraints = false
 
-        let size = label.intrinsicContentSize
-        label.frame = CGRect(origin: .zero, size: size)
-        label.layer.cornerRadius = size.height / 2
+        let container = UIView()
+        if #available(iOS 26.0, *) {
+            container.backgroundColor = .white
+        }
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(label)
 
+        // Constraints are REQUIRED in iOS 26
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            label.topAnchor.constraint(equalTo: container.topAnchor),
+            label.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+        ])
+
+        // Force layout so size is known
+        container.layoutIfNeeded()
+
+        // Rounded pill
+        label.layer.cornerRadius = label.intrinsicContentSize.height / 2
+
+        // Tap handling
         let tapGesture = UITapGestureRecognizer(target: target, action: action)
-        label.isUserInteractionEnabled = true
-        label.addGestureRecognizer(tapGesture)
+        container.isUserInteractionEnabled = true
+        container.addGestureRecognizer(tapGesture)
 
-        return UIBarButtonItem(customView: label)
+        return UIBarButtonItem(customView: container)
     }
 }

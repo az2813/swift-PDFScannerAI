@@ -28,6 +28,9 @@ final class PreviewViewController: UIViewController, UITextViewDelegate {
     private var interactionHelper: PreviewInteractionHelper!
     private var tableHelper: PreviewChatsTableViewHelper!
     var pdfView: PDFView?
+    var didRenamePDF: ((String, String) -> Void)? = nil
+    var isFromAddCar: Bool = false
+    var isTitleEditable: Bool = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -131,7 +134,8 @@ final class PreviewViewController: UIViewController, UITextViewDelegate {
             tapTarget: self,
             tapAction: #selector(handleTitleTap),
             doneTarget: self,
-            doneAction: #selector(handleDoneButton)
+            doneAction: #selector(handleDoneButton),
+            isTitleEditable: isTitleEditable
         )
     }
 
@@ -150,12 +154,23 @@ final class PreviewViewController: UIViewController, UITextViewDelegate {
             if self.viewModel.renamePDF(to: name) {
                 FileChatManager.shared.renameDocument(oldName: oldName, newName: name)
                 self.configureNavigationBar()
+                self.didRenamePDF?(oldName, name)
             }
         }
     }
 
     @objc private func handleDoneButton() {
-        navigationController?.popToRootViewController(animated: true)
+        if isFromAddCar == false {
+            navigationController?.popToRootViewController(animated: true)
+        } else {
+            if let viewControllers = navigationController?.viewControllers, let viewController = viewControllers.first(where: { viewController in
+                return viewController is AddCarViewController
+            }) {
+                navigationController?.popToViewController(viewController, animated: true)
+            } else {
+                navigationController?.popToRootViewController(animated: true)
+            }
+        }
     }
 }
 

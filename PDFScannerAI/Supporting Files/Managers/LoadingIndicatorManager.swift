@@ -6,6 +6,7 @@
 
 import Foundation
 import UIKit
+import ProgressHUD
 
 class LoadingIndicatorManager {
     static let shared = LoadingIndicatorManager()
@@ -43,6 +44,10 @@ class LoadingIndicatorManager {
             guard let self = self else { return }
             self.blurEffectView?.isHidden = false
             self.startRotatingSpinner()
+            ProgressHUD.animationType = .barSweepToggle
+            ProgressHUD.colorHUD = Colors.blueColor
+            ProgressHUD.colorAnimation = .white
+            ProgressHUD.animate(interaction: false)
         }
     }
 
@@ -51,6 +56,7 @@ class LoadingIndicatorManager {
             guard let self = self else { return }
             self.blurEffectView?.isHidden = true
             self.stopRotatingSpinner()
+            ProgressHUD.dismiss()
         }
     }
 

@@ -138,14 +138,25 @@ final class EditorInteractionHelper {
 
     func openPreview() {
         guard let vc = viewController, let url = businessLogic.exportPDF() else { return }
-        FileChatManager.shared.saveDocument(
-            at: url,
-            fileName: businessLogic.fileName,
-            metadata: ["pages": businessLogic.pageCount]
-        ) { result in
-            if case let .failure(error) = result {
-                print("Failed to save file info: \(error.localizedDescription)")
+        if vc.isCarImage {
+            vc.didSavePDF?(url, self.businessLogic.getImages())
+            vc.navigationController?.popViewController(animated: true)
+            return
+        }
+        if !businessLogic.isUpdate {
+            FileChatManager.shared.saveDocument(
+                at: url,
+                fileName: businessLogic.fileName,
+                metadata: ["pages": businessLogic.pageCount]
+            ) { result in
+                if case let .failure(error) = result {
+                    print("Failed to save file info: \(error.localizedDescription)")
+                } else {
+                    vc.didSavePDF?(url, self.businessLogic.getImages())
+                }
             }
+        } else {
+            vc.didSavePDF?(url, self.businessLogic.getImages())
         }
         NavigationManager.shared.transitionToViewController(
             identifier: "PreviewViewController",
@@ -153,8 +164,13 @@ final class EditorInteractionHelper {
             push: true
         ) { viewController in
             if let previewVC = viewController as? PreviewViewController {
-                previewVC.viewModel.loadPDF(at: url)
-                previewVC.viewModel.updateFileName(self.businessLogic.fileName)
+                if vc.isCarImage {
+                    
+                } else {
+                    previewVC.viewModel.loadPDF(at: url)
+                    previewVC.viewModel.updateFileName(self.businessLogic.fileName)
+                    previewVC.isFromAddCar = vc.isFromAddCar
+                }
             }
         }
     }

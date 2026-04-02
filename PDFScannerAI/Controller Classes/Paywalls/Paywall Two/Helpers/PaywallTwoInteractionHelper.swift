@@ -16,9 +16,18 @@ class PaywallTwoInteractionHelper {
     }
 
     func purchaseSelectedProduct() {
-        guard let vc = viewController else { return }
+        //guard let vc = viewController else { return }
         LoadingIndicatorManager.shared.show()
-        viewModel.purchaseSelectedProduct { [weak self] result in
+        PurchaseManager.shared.didPurchase = { success in
+            if success {
+                DispatchQueue.main.async {
+                    self.openApp()
+                }
+            }
+        }
+        let product = viewModel.selectedProduct?.product.vendorProductId
+        PurchaseManager.shared.purchase(productId: product!)
+        /*viewModel.purchaseSelectedProduct { [weak self] result in
             DispatchQueue.main.async {
                 LoadingIndicatorManager.shared.hide()
                 switch result {
@@ -32,13 +41,21 @@ class PaywallTwoInteractionHelper {
                     AlertHelper.showAlert(on: vc, title: "Purchase Error", message: error.localizedDescription, actions: [ok])
                 }
             }
-        }
+        }*/
     }
 
     func restorePurchases() {
-        guard let vc = viewController else { return }
+        //guard let vc = viewController else { return }
         LoadingIndicatorManager.shared.show()
-        viewModel.restorePurchases { [weak self] result in
+        PurchaseManager.shared.didRestore = { success in
+            if success {
+                DispatchQueue.main.async {
+                    self.openApp()
+                }
+            }
+        }
+        PurchaseManager.shared.restore()
+        /*viewModel.restorePurchases { [weak self] result in
             DispatchQueue.main.async {
                 LoadingIndicatorManager.shared.hide()
                 switch result {
@@ -52,7 +69,7 @@ class PaywallTwoInteractionHelper {
                     AlertHelper.showAlert(on: vc, title: "Restore Error", message: error.localizedDescription, actions: [ok])
                 }
             }
-        }
+        }*/
     }
 
     func openPrivacy() {

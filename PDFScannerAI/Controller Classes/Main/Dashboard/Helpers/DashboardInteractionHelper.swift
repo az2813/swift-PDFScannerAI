@@ -44,6 +44,14 @@ final class DashboardInteractionHelper {
             }
         }
     }
+    
+    @objc func handleCarScanButton(_ sender: UIButton) {
+        AnimationUtility.animateButtonPress(sender) { [weak self] in
+            self?.requireSubscription { [weak self] in
+                self?.handleCarScan()
+            }
+        }
+    }
 
     // MARK: - Private Navigation Helpers
     private func openSettings() {
@@ -135,6 +143,17 @@ final class DashboardInteractionHelper {
                     preview.viewModel.updateFileName(destinationURL.deletingPathExtension().lastPathComponent)
                 }
             }
+        }
+    }
+    
+    private func handleCarScan() {
+        guard let vc = viewController else { return }
+        NavigationManager.shared.transitionToViewController(
+            identifier: "AddCarViewController",
+            from: vc,
+            push: true
+        ) { viewController in
+            
         }
     }
 

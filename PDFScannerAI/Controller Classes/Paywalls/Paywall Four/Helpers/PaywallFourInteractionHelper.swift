@@ -18,7 +18,16 @@ class PaywallFourInteractionHelper {
     func purchaseSelectedProduct() {
         guard let vc = viewController else { return }
         LoadingIndicatorManager.shared.show()
-        viewModel.purchaseSelectedProduct { [weak self] result in
+        PurchaseManager.shared.didPurchase = { success in
+            if success {
+                DispatchQueue.main.async {
+                    self.openApp()
+                }
+            }
+        }
+        guard let productId = viewModel.selectedProduct?.product.vendorProductId else { return }
+        PurchaseManager.shared.purchase(productId: productId)
+        /*viewModel.purchaseSelectedProduct { [weak self] result in
             DispatchQueue.main.async {
                 LoadingIndicatorManager.shared.hide()
                 switch result {
@@ -32,13 +41,21 @@ class PaywallFourInteractionHelper {
                     AlertHelper.showAlert(on: vc, title: "Purchase Error", message: error.localizedDescription, actions: [ok])
                 }
             }
-        }
+        }*/
     }
 
     func restorePurchases() {
         guard let vc = viewController else { return }
         LoadingIndicatorManager.shared.show()
-        viewModel.restorePurchases { [weak self] result in
+        PurchaseManager.shared.didRestore = { success in
+            if success {
+                DispatchQueue.main.async {
+                    self.openApp()
+                }
+            }
+        }
+        PurchaseManager.shared.restore()
+        /*viewModel.restorePurchases { [weak self] result in
             DispatchQueue.main.async {
                 LoadingIndicatorManager.shared.hide()
                 switch result {
@@ -52,7 +69,7 @@ class PaywallFourInteractionHelper {
                     AlertHelper.showAlert(on: vc, title: "Restore Error", message: error.localizedDescription, actions: [ok])
                 }
             }
-        }
+        }*/
     }
 
     func openPrivacy() {

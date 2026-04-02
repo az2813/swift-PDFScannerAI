@@ -18,8 +18,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupAppearance()
         setupThirdPartyServices()
         registerUser()
+        
+        PurchaseManager.shared.completeTransactions()
+        PurchaseManager.shared.retrievePrices(productIds: [UNLOCK_1WEEK_SUBSCRIPTION, UNLOCK_1MONTH_SUBSCRIPTION, UNLOCK_1YEAR_SUBSCRIPTION]) { products in
+            print(products)
+        }
 
         return true
+    }
+    
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        PurchaseManager.shared.updateSubscriptionStatus()
     }
 
     // MARK: - Window & UI Setup

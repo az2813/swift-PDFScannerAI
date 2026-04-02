@@ -26,7 +26,7 @@ enum Constants {
     }
     
     static var appName: String {
-        "AI PDF Scanner"
+        "LogitHub"
     }
     
     static var appID: String {
@@ -42,6 +42,6 @@ enum Constants {
     }
     
     static var isTestMode: Bool {
-        true
+        false
     }
 }
