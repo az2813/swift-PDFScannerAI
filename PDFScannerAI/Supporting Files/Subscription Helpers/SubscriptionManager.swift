@@ -15,6 +15,7 @@ class SubscriptionManager {
     func checkSubscriptionStatus(completion: @escaping (Bool) -> Void) {
         RemoteConfigManager.shared.fetchConfig { success in
             DispatchQueue.main.async {
+                //completion(true)
                 if RemoteConfigManager.shared.getBool(forKey: "appFree") {
                     completion(true)
                 } else {

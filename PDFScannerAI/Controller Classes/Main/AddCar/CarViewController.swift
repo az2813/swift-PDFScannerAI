@@ -192,7 +192,7 @@ class CarViewController: UIViewController {
     
     func generatePDF() -> URL? {
         guard let document else { return nil }
-        guard let image = contentsScrollView.toImage() else { return document.fileURL }
+        guard let image = contentsScrollView.headImage(informationView.frame.maxY + 20.0) else { return document.fileURL }
         let pdf = PDFDocument()
         let pdfPage = PDFPage(image: image)
         pdf.insert(pdfPage!, at: 0)
@@ -202,13 +202,81 @@ class CarViewController: UIViewController {
             pdf.write(to: pdfURL)
         } else {
             if let doc = PDFDocument(url: document.fileURL) {
-                for i in 0 ..< doc.pageCount {
-                    pdf.insert(doc.page(at: i)!, at: i + 1)
+                var index = 1
+                for row in 0 ..< services.count {
+                    let key = serviceKeys[row]
+                    let service = services[key] as! [String: String]
+                    let pages = service["pages"]?.components(separatedBy: "-")
+                    let start = Int(pages![0]) ?? 0
+                    let count = Int(pages![1]) ?? 0
+                    for i in 0 ..< count {
+                        let receipt = doc.page(at: start + i)!
+                        if i == 0 {
+                            let pdfPage = createPDFPage(row: row, page: receipt)
+                            pdf.insert(pdfPage, at: index)
+                        } else {
+                            pdf.insert(receipt, at: index)
+                        }
+                        index += 1
+                    }
                 }
             }
             pdf.write(to: pdfURL)
         }
         return pdfURL
+    }
+    
+    func createPDFPage(row: Int, page: PDFPage) -> PDFPage {
+        
+        let pageImage = page.renderImage()!
+        var pageSize = pageImage.size
+        let cell = servicesTableView.dataSource!.tableView(servicesTableView, cellForRowAt: IndexPath(row: row, section: 0))
+        let cellImage = imageFromCell(cell)
+        pageSize.height += cellImage.size.height
+        
+        let renderer = UIGraphicsImageRenderer(size: pageSize)
+        
+        let pdfImage = renderer.image { context in
+            let cgContext = context.cgContext
+            
+            // White background
+            UIColor.white.setFill()
+            cgContext.fill(CGRect(origin: .zero, size: pageSize))
+            
+            // Draw cell at TOP
+            let cellHeight = cellImage.size.height
+            let cellRect = CGRect(
+                x: 0,
+                y: 10,
+                width: pageSize.width,
+                height: cellHeight
+            )
+            
+            cellImage.draw(in: cellRect)
+            
+            let pageHeight = pageImage.size.height
+            let pageRect = CGRect(x: 0, y: cellHeight, width: pageSize.width, height: pageHeight)
+            pageImage.draw(in: pageRect)
+        }
+        
+        return PDFPage(image: pdfImage)!
+    }
+    
+    func imageFromCell(_ cell: UITableViewCell) -> UIImage {
+        cell.layoutIfNeeded()
+        
+        let size = cell.contentView.systemLayoutSizeFitting(
+            CGSize(width: cell.bounds.width, height: UIView.layoutFittingCompressedSize.height)
+        )
+        
+        cell.bounds = CGRect(origin: .zero, size: size)
+        cell.contentView.bounds = cell.bounds
+        
+        let renderer = UIGraphicsImageRenderer(size: size)
+        
+        return renderer.image { _ in
+            cell.drawHierarchy(in: cell.bounds, afterScreenUpdates: true)
+        }
     }
     
     /*
@@ -291,6 +359,57 @@ extension UIScrollView {
         frame = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
         
         layer.render(in: UIGraphicsGetCurrentContext()!)
+        
+        for view in subviews {
+            if let tableView = view as? UITableView {
+                for row in 0 ..< tableView.numberOfRows(inSection: 0) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    
+                    guard let cell = tableView.dataSource?.tableView(tableView, cellForRowAt: indexPath) else { continue }
+                    
+                    cell.bounds = CGRect(x: 0, y: 0, width: bounds.width, height: tableView.delegate!.tableView!(tableView, heightForRowAt: indexPath))
+                    cell.layoutIfNeeded()
+                    
+                    UIGraphicsBeginImageContextWithOptions(cell.bounds.size, false, UIScreen.main.scale)
+                    cell.drawHierarchy(in: cell.bounds, afterScreenUpdates: true)
+                    let image = UIGraphicsGetImageFromCurrentImageContext()
+                    UIGraphicsEndImageContext()
+                    
+                    var frame = cell.convert(cell.bounds, to: self)
+                    frame.origin.x = tableView.frame.minX
+                    image?.draw(in: frame)
+                }
+            }
+        }
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        
+        contentOffset = savedContentOffset
+        frame = savedFrame
+        showsVerticalScrollIndicator = saveVerticalScroll
+        showsHorizontalScrollIndicator = saveHorizontalScroll
+        
+        UIGraphicsEndImageContext()
+        
+        return image
+    }
+    
+    func headImage(_ height: CGFloat) -> UIImage? {
+        let size = CGSize(width: contentSize.width, height: height)
+        UIGraphicsBeginImageContext(size)
+        
+        let savedContentOffset = contentOffset
+        let savedFrame = frame
+        let saveVerticalScroll = showsVerticalScrollIndicator
+        let saveHorizontalScroll = showsHorizontalScrollIndicator
+        
+        showsVerticalScrollIndicator = false
+        showsHorizontalScrollIndicator = false
+        contentOffset = CGPoint.zero
+        frame = CGRect(x: 0, y: 0, width: contentSize.width, height: contentSize.height)
+        
+        layer.render(in: UIGraphicsGetCurrentContext()!)
+        
         let image = UIGraphicsGetImageFromCurrentImageContext()
         
         contentOffset = savedContentOffset
@@ -303,4 +422,3 @@ extension UIScrollView {
         return image
     }
 }
-
