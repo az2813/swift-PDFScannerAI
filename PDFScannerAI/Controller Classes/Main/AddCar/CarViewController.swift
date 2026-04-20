@@ -7,6 +7,7 @@
 
 import UIKit
 import PDFKit
+import ProgressHUD
 
 class CarViewController: UIViewController {
 
@@ -67,16 +68,6 @@ class CarViewController: UIViewController {
         modelTextField.font = FontHelper.font(.regular, size: 13)
         purchaseTextField.font = FontHelper.font(.regular, size: 13)
         vinNumberTextField.font = FontHelper.font(.regular, size: 13)
-        //applyBorderCorner(manufacturerTextField, cornerRadius: 4.0)
-        //applyPadding(manufacturerTextField)
-        //applyBorderCorner(typeTextField, cornerRadius: 4.0)
-        //applyPadding(typeTextField)
-        //applyBorderCorner(yearTextField, cornerRadius: 4.0)
-        //applyPadding(yearTextField)
-        //applyBorderCorner(makeTextField, cornerRadius: 4.0)
-        //applyPadding(makeTextField)
-        //applyBorderCorner(modelTextField, cornerRadius: 4.0)
-        //applyPadding(modelTextField)
         
         if let document = document, let data = document.carData {
             //savedURL = document.fileURL
@@ -166,59 +157,79 @@ class CarViewController: UIViewController {
     }
     
     @objc fileprivate func handlePreview(_ sender: UITapGestureRecognizer) {
-        guard var url = generatePDF() else {
-            return
-        }
-        if !FileManager.default.fileExists(atPath: url.path()) {
-            let fileName = url.lastPathComponent
-            let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            url = documentsDir.appendingPathComponent(fileName)
-        }
-        
-        NavigationManager.shared.transitionToViewController(
-            identifier: "PreviewViewController",
-            from: self,
-            push: true
-        ) { viewController in
-            if let previewVC = viewController as? PreviewViewController {
-                previewVC.viewModel.loadPDF(at: url)
-                let fileName = url.deletingPathExtension().lastPathComponent
-                previewVC.viewModel.updateFileName(fileName)
-                previewVC.isFromAddCar = true
-                previewVC.isTitleEditable = false
+        ProgressHUD.animate(interaction: false)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            guard var url = self.generatePDF() else {
+                return
+            }
+            ProgressHUD.dismiss()
+            if !FileManager.default.fileExists(atPath: url.path()) {
+                let fileName = url.lastPathComponent
+                let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                url = documentsDir.appendingPathComponent(fileName)
+            }
+            
+            NavigationManager.shared.transitionToViewController(
+                identifier: "PreviewViewController",
+                from: self,
+                push: true
+            ) { viewController in
+                if let previewVC = viewController as? PreviewViewController {
+                    previewVC.viewModel.loadPDF(at: url)
+                    let fileName = url.deletingPathExtension().lastPathComponent
+                    previewVC.viewModel.updateFileName(fileName)
+                    previewVC.isFromAddCar = true
+                    previewVC.isTitleEditable = false
+                }
             }
         }
     }
     
     func generatePDF() -> URL? {
         guard let document else { return nil }
-        guard let image = contentsScrollView.headImage(informationView.frame.maxY + 20.0) else { return document.fileURL }
+        guard var image = contentsScrollView.headImage(informationView.frame.maxY + 20.0) else { return document.fileURL }
         let pdf = PDFDocument()
-        let pdfPage = PDFPage(image: image)
-        pdf.insert(pdfPage!, at: 0)
-        let pdfURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Car.pdf")
+        var pageSize = CGSize.zero
+        let pdfURL = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!).appendingPathComponent("Car.pdf")
         try? FileManager.default.removeItem(at: pdfURL)
         if document.services.count == 0 {
+            let pdfPage = PDFPage(image: image)
+            pdf.insert(pdfPage!, at: 0)
             pdf.write(to: pdfURL)
         } else {
             if let doc = PDFDocument(url: document.fileURL) {
-                var index = 1
+                var index = 0
                 for row in 0 ..< services.count {
-                    let key = serviceKeys[row]
-                    let service = services[key] as! [String: String]
-                    let pages = service["pages"]?.components(separatedBy: "-")
-                    let start = Int(pages![0]) ?? 0
-                    let count = Int(pages![1]) ?? 0
-                    for i in 0 ..< count {
-                        let receipt = doc.page(at: start + i)!
-                        if i == 0 {
-                            let pdfPage = createPDFPage(row: row, page: receipt)
-                            pdf.insert(pdfPage, at: index)
-                        } else {
-                            pdf.insert(receipt, at: index)
+                    autoreleasepool {
+                        let key = serviceKeys[row]
+                        if let service = services[key] as? [String: String], let pages = service["pages"]?.components(separatedBy: "-") {
+                            let start = Int(pages[0]) ?? 0
+                            let count = Int(pages[1]) ?? 0
+                            for i in 0 ..< count {
+                                let receipt = doc.page(at: start + i)!
+                                if i == 0 {
+                                    let pdfPage = createPDFPage(row: row, page: receipt)
+                                    pdf.insert(pdfPage.0, at: index)
+                                    if pageSize == .zero {
+                                        pageSize = pdfPage.1
+                                    }
+                                } else {
+                                    pdf.insert(receipt.resized(), at: index)
+                                }
+                                index += 1
+                            }
                         }
-                        index += 1
                     }
+                }
+            }
+            if pageSize == .zero {
+                if let pdfPage = PDFPage(image: image) {
+                    pdf.insert(pdfPage, at: 0)
+                }
+            } else {
+                image = image.resized(to: CGSize(width: pageSize.width, height: image.size.height / image.size.width * pageSize.width))
+                if let pdfPage = PDFPage(image: image) {
+                    pdf.insert(pdfPage, at: 0)
                 }
             }
             pdf.write(to: pdfURL)
@@ -226,13 +237,24 @@ class CarViewController: UIViewController {
         return pdfURL
     }
     
-    func createPDFPage(row: Int, page: PDFPage) -> PDFPage {
+    func createPDFPage(row: Int, page: PDFPage) -> (PDFPage, CGSize) {
         
-        let pageImage = page.renderImage()!
-        var pageSize = pageImage.size
-        let cell = servicesTableView.dataSource!.tableView(servicesTableView, cellForRowAt: IndexPath(row: row, section: 0))
+        guard let pageImage = page.renderImage(scale: 1.0) else {
+            AlertHelper.showAlert(on: self, message: "Failed to render pdf page to image", actions: [UIAlertAction(title: "OK", style: .default)])
+            return (page, .zero)
+        }
+        var pageSize = CGSize(width: pageImage.size.width, height: pageImage.size.height)
+        guard let cell = servicesTableView.dataSource?.tableView(servicesTableView, cellForRowAt: IndexPath(row: row, section: 0)) else {
+            AlertHelper.showAlert(on: self, message: "Failed to get image cell", actions: [UIAlertAction(title: "OK", style: .default)])
+            return (page, pageSize)
+        }
         let cellImage = imageFromCell(cell)
-        pageSize.height += cellImage.size.height
+        guard cellImage.size.width > 0 else {
+            return (page, pageSize)
+        }
+        let cellRatio = pageSize.width / cellImage.size.width
+        let cellHeight = cellRatio * cellImage.size.height
+        pageSize.height += cellHeight
         
         let renderer = UIGraphicsImageRenderer(size: pageSize)
         
@@ -244,10 +266,9 @@ class CarViewController: UIViewController {
             cgContext.fill(CGRect(origin: .zero, size: pageSize))
             
             // Draw cell at TOP
-            let cellHeight = cellImage.size.height
             let cellRect = CGRect(
                 x: 0,
-                y: 10,
+                y: 10 * cellRatio,
                 width: pageSize.width,
                 height: cellHeight
             )
@@ -259,7 +280,12 @@ class CarViewController: UIViewController {
             pageImage.draw(in: pageRect)
         }
         
-        return PDFPage(image: pdfImage)!
+        guard let pdfPage = PDFPage(image: pdfImage) else {
+            AlertHelper.showAlert(on: self, message: "Failed to make pdf page from image", actions: [UIAlertAction(title: "OK", style: .default)])
+            return (page, pageSize)
+        }
+        
+        return (pdfPage, pageSize)
     }
     
     func imageFromCell(_ cell: UITableViewCell) -> UIImage {
@@ -269,13 +295,18 @@ class CarViewController: UIViewController {
             CGSize(width: cell.bounds.width, height: UIView.layoutFittingCompressedSize.height)
         )
         
-        cell.bounds = CGRect(origin: .zero, size: size)
-        cell.contentView.bounds = cell.bounds
+        cell.frame = CGRect(origin: .zero, size: size)
+        //cell.contentView.bounds = cell.bounds
+        cell.setNeedsLayout()
+        cell.layoutIfNeeded()
         
-        let renderer = UIGraphicsImageRenderer(size: size)
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 0.0
+        let renderer = UIGraphicsImageRenderer(size: size, format: format)
         
-        return renderer.image { _ in
-            cell.drawHierarchy(in: cell.bounds, afterScreenUpdates: true)
+        return renderer.image { context in
+            //cell.drawHierarchy(in: cell.bounds, afterScreenUpdates: true)
+            cell.layer.render(in: context.cgContext)
         }
     }
     
@@ -396,7 +427,7 @@ extension UIScrollView {
     
     func headImage(_ height: CGFloat) -> UIImage? {
         let size = CGSize(width: contentSize.width, height: height)
-        UIGraphicsBeginImageContext(size)
+        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
         
         let savedContentOffset = contentOffset
         let savedFrame = frame

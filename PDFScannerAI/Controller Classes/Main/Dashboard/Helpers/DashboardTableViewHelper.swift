@@ -6,6 +6,7 @@
 
 import UIKit
 import PDFKit
+import ProgressHUD
 
 class DashboardTableViewHelper: NSObject {
     private weak var tableView: UITableView?
@@ -194,28 +195,39 @@ private extension DashboardTableViewHelper {
 
     func download(_ document: Document) {
         guard let vc = viewController else { return }
-        let activity = UIActivityViewController(activityItems: [document.fileURL], applicationActivities: nil)
+        let activity: UIActivityViewController
+        if let data = document.carData, let imageName = data["image"] as? String {
+            let documentDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let path = documentDir.appendingPathComponent(imageName)
+            activity = UIActivityViewController(activityItems: [path, data, document.fileURL], applicationActivities: nil)
+        } else {
+            activity = UIActivityViewController(activityItems: [document.fileURL], applicationActivities: nil)
+        }
         vc.present(activity, animated: true)
     }
 
     func share(_ document: Document) {
         guard let vc = viewController else { return }
-        let activity: UIActivityViewController
-        if var _ = document.carData {
-            let controller = vc.storyboard!.instantiateViewController(withIdentifier: "CarViewController") as! CarViewController
-            controller.document = document
-            controller.loadViewIfNeeded()
-            controller.view.setNeedsLayout()
-            controller.view.layoutIfNeeded()
-            if let fileURL = controller.generatePDF() {
-                activity = UIActivityViewController(activityItems: [fileURL], applicationActivities: nil)
+        ProgressHUD.animate(interaction: false)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            let activity: UIActivityViewController
+            if var _ = document.carData {
+                let controller = vc.storyboard!.instantiateViewController(withIdentifier: "CarViewController") as! CarViewController
+                controller.document = document
+                controller.loadViewIfNeeded()
+                controller.view.setNeedsLayout()
+                controller.view.layoutIfNeeded()
+                if let fileURL = controller.generatePDF() {
+                    activity = UIActivityViewController(activityItems: [fileURL], applicationActivities: nil)
+                } else {
+                    activity = UIActivityViewController(activityItems: [document.fileURL], applicationActivities: nil)
+                }
+                ProgressHUD.dismiss()
             } else {
                 activity = UIActivityViewController(activityItems: [document.fileURL], applicationActivities: nil)
             }
-        } else {
-            activity = UIActivityViewController(activityItems: [document.fileURL], applicationActivities: nil)
+            vc.present(activity, animated: true)
         }
-        vc.present(activity, animated: true)
     }
 
     func delete(_ document: Document) {

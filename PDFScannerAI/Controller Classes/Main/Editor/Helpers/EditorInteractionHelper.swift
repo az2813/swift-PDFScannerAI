@@ -115,7 +115,8 @@ final class EditorInteractionHelper {
         if Constants.isTestMode {
             let imageNames = ["test_1", "test_2", "test_3"]
             let images = imageNames.compactMap { UIImage(named: $0) }
-            addPages(images)
+            let resizedImages = images.compactMap{ $0.resized(to: CGSize(width: $0.size.width * 2, height: $0.size.height * 2)) }
+            addPages(resizedImages)
         } else {
             DocumentScannerManager.shared.presentScanner(from: vc) { [weak self] images in
                 self?.addPages(images)
@@ -128,7 +129,8 @@ final class EditorInteractionHelper {
         if Constants.isTestMode {
             let imageNames = ["test_1", "test_2", "test_3"]
             let images = imageNames.compactMap { UIImage(named: $0) }
-            vc.loadImages(images)
+            let resizedImages = images.compactMap{ $0.resized(to: CGSize(width: $0.size.width * 2, height: $0.size.height * 2)) }
+            vc.loadImages(resizedImages)
         } else {
             DocumentScannerManager.shared.presentScanner(from: vc) { images in
                 vc.loadImages(images)

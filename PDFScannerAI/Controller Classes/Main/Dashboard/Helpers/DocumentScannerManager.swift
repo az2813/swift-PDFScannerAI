@@ -35,7 +35,13 @@ extension DocumentScannerManager: VNDocumentCameraViewControllerDelegate {
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
         var images: [UIImage] = []
         for index in 0..<scan.pageCount {
-            images.append(scan.imageOfPage(at: index))
+            var image = scan.imageOfPage(at: index)
+            if image.size.width >= 3000, image.size.height >= 3000 {
+                image = image.resized(to: CGSize(width: image.size.width / 3.0, height: image.size.height / 3.0))
+            } else if image.size.width >= 2000, image.size.height >= 2000 {
+                image = image.resized(to: CGSize(width: image.size.width / 2.0, height: image.size.height / 2.0))
+            }
+            images.append(image)
         }
         controller.dismiss(animated: true) { [weak self] in
             self?.completion?(images)

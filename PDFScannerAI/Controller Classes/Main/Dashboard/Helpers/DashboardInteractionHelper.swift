@@ -81,7 +81,8 @@ final class DashboardInteractionHelper {
         if Constants.isTestMode {
             let imageNames = ["test_1", "test_2", "test_3"]
             let images = imageNames.compactMap { UIImage(named: $0) }
-            guard !images.isEmpty else {
+            let resizedImages = images.compactMap{ $0.resized(to: CGSize(width: $0.size.width * 2, height: $0.size.height * 2)) }
+            guard !resizedImages.isEmpty else {
                 print("Failed to load test images")
                 return
             }
