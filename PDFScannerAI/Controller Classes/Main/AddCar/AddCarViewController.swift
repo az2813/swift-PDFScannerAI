@@ -327,7 +327,8 @@ class AddCarViewController: UIViewController {
         if Constants.isTestMode {
             let imageNames = ["test_1", "test_2", "test_3"]
             let images = imageNames.compactMap { UIImage(named: $0) }
-            guard !images.isEmpty else {
+            let resizedImages = images.compactMap{ $0.resized(to: CGSize(width: $0.size.width * 2, height: $0.size.height * 2)) }
+            guard !resizedImages.isEmpty else {
                 print("Failed to load test images")
                 return
             }
@@ -340,7 +341,7 @@ class AddCarViewController: UIViewController {
                 (viewController as? EditorViewController)?.document = self.document
                 var _images: [UIImage] = []
                 _images.append(contentsOf: self.images)
-                _images.append(contentsOf: images)
+                _images.append(contentsOf: resizedImages)
                 (viewController as? EditorViewController)?.loadImages(_images)
                 (viewController as? EditorViewController)?.didSavePDF = { url, images in
                     if let _url = self.savedURL, _url != url {

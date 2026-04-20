@@ -7,6 +7,7 @@
 import UIKit
 import Firebase
 import Adapty
+import ProgressHUD
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,6 +24,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         PurchaseManager.shared.retrievePrices(productIds: [UNLOCK_1WEEK_SUBSCRIPTION, UNLOCK_1MONTH_SUBSCRIPTION, UNLOCK_1YEAR_SUBSCRIPTION]) { products in
             print(products)
         }
+        
+        ProgressHUD.animationType = .barSweepToggle
+        ProgressHUD.colorHUD = Colors.blueColor
+        ProgressHUD.colorAnimation = .white
 
         return true
     }

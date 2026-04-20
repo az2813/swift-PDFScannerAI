@@ -30,6 +30,7 @@ class DocumentTableCell: UITableViewCell {
         setupUI()
         selectionStyle = .none
         moreButton.addTarget(self, action: #selector(handleMoreButton), for: .touchUpInside)
+        moreButton.imageEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
     }
     
     // MARK: - UI Setup
